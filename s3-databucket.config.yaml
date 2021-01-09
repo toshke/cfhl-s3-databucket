@@ -1,0 +1,56 @@
+## Bucket name
+name:
+  Fn::Sub: ${AWS::AccountId}.data.example.com
+
+### Encryption options
+## Default bucket encryption AES256 or aws:kms
+## is aws:kms use default_kms_key_id or create_key property below
+default_encryption: 'aws:kms'
+default_kms_key_id: 'alias/aws/s3'
+## See S3 bucket key at AWS documentation. https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html
+kms_bucket_key_enabled: true
+
+## KMS key for S3 encryption will be created, renders default_kms_key_id option unused
+create_kms_key: true
+
+## If encryption configured, this will require encryption option to
+## be specified in every PUT request, and limited to given key for KMS encryption
+enforce_encryption_option: true
+
+## Tag the data storage with orgnisation data classification
+data_classification: private
+
+## Options
+versioned: true
+lock_enabled: true
+public_access_disabled: true
+
+### IAM permissions
+
+## Allow whole account to read the bucket object
+allow_account_read: true
+
+## Only MFA authenticated root account (account owner) can delete
+prevent_nonroot_delete: true
+
+## Create IAM role to write to the bucket 
+create_writter_role: true
+## Prevent write from anyone except writter role
+enforce_writter_role: true
+## IAM arns (wildcard allowed) to assume writer role
+writer_role_assume_arns: [{"Fn::Sub":"arn:aws:iam::${AccountId}:root"}]
+## PrinciaplOrgPath condition, limiting access to given OUs. Leave nil for no condition
+writer_role_assume_org_paths: 
+
+## Arn of allowed writers. Set to nil to disable
+write_allow_arns: [{"Fn::Sub":"arn:aws:iam::${AccountId}:root"}]
+## OU paths allowed to write. Set to nil to disable
+write_allow_org_paths: 
+
+
+## Set this to creat lifecycle rule to transition to infrequent storage tier after
+## given number of days
+transition_ia_after_days:
+## Set this to create lifecycle rule to transition items in bucket to Glacier
+## after given number of days
+transition_glacier_after_days:
